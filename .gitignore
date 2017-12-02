@@ -3,6 +3,7 @@
 
 # data files
 *.json
+*.csv
 
 # android development
 *.iml
