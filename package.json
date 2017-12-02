@@ -1,0 +1,36 @@
+{
+    "author": "bryan.pittard@gmail.com",
+    "dependencies": {},
+    "keywords": [],
+    "name": "buddy-hackathon-android",
+    "pebble": {
+        "capabilities": [
+            "health"
+        ],
+        "displayName": "Buddy Hackathon Android",
+        "enableMultiJS": false,
+        "messageKeys": {
+            "ACTIVE": 0,
+            "HEART": 2,
+            "REQUEST": 3,
+            "SLEEP": 1
+        },
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite",
+            "emery"
+        ],
+        "uuid": "014cbd41-93a8-41df-9a1e-9491f0db7b86",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}
