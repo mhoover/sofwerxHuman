@@ -2,6 +2,7 @@
 import argparse
 import json
 import numpy as np
+import pandas as pd
 import random
 
 from string import ascii_lowercase, digits
@@ -71,7 +72,7 @@ def tipi_reversing(x):
 
 def calculate_scores(values, scale=['tci', 'tipi']):
     if 'tci' in scale:
-        return [sum(values[x[0]:x[1]]) for x in TCI]
+        return [np.mean(values[x[0]:x[1]]) for x in TCI]
     else:
         return [np.mean([values[x[0]], tipi_reversing(values[x[1]])]) for x in
                 TIPI]
@@ -99,14 +100,43 @@ def run(args_dict):
         results.update(
             {
                 rid: {
-                    'tipi': tipi_scores,
-                    'tci': tci_scores,
+                    'tipi': {name: value for name, value in zip(
+                             ['extraversion', 'agreeableness',
+                             'conscientiousness', 'emotional_stability',
+                             'openness_to_experiences'], tipi_scores)},
+                    'tci': {name: value for name, value in zip(
+                            ['vision', 'task_orientation',
+                            'support_for_innovation', 'participative_safety'],
+                            tci_scores)},
                 }
             }
         )
 
     # output results
-    with open(args_dict['output'], 'w') as f:
+    df = pd.DataFrame({
+        'id': [x for x in results.keys()],
+        'tipi_extraversion':
+            [results[x]['tipi']['extraversion'] for x in results.keys()],
+        'tipi_agreeableness':
+            [results[x]['tipi']['agreeableness'] for x in results.keys()],
+        'tipi_conscientiousness':
+            [results[x]['tipi']['conscientiousness'] for x in results.keys()],
+        'tipi_emotional_stability':
+            [results[x]['tipi']['emotional_stability'] for x in results.keys()],
+        'tipi_openness_to_experiences':
+            [results[x]['tipi']['openness_to_experiences'] for x in
+             results.keys()],
+        'tci_vision':
+            [results[x]['tci']['vision'] for x in results.keys()],
+        'tci_task_orientation':
+            [results[x]['tci']['task_orientation'] for x in results.keys()],
+        'tci_support_for_innovation':
+            [results[x]['tci']['support_for_innovation'] for x in results.keys()],
+        'tci_participative_safety':
+            [results[x]['tci']['participative_safety'] for x in results.keys()],
+    })
+    df.to_csv('{}.csv'.format(args_dict['output']), index=False)
+    with open('{}.json'.format(args_dict['output']), 'w') as f:
         json.dump(results, f)
 
 
