@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.buddy.pm.myapplication.MainActivity">
+
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="@string/edit_message"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="155dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="139dp"
+        android:layout_height="45dp"
+        android:text="Questionnaire:"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <Button
+        android:id="@+id/sendButton"
+        android:layout_width="280dp"
+        android:layout_height="49dp"
+        android:onClick="sendMessage"
+        android:text="@string/button_send"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText"
+        app:layout_constraintVertical_bias="0.019"
+        tools:layout_editor_absoluteX="56dp" />
+
+
+</android.support.constraint.ConstraintLayout>
+
+
+
