@@ -2,8 +2,9 @@
 *.pyc
 
 # data files
-*.json
-*.csv
+instruments/*.json
+instruments/*.csv
+biomeasures/*_output.csv
 
 # android development
 *.iml
