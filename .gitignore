@@ -1,2 +1,5 @@
 # python bytecode
 *.pyc
+
+# data files
+*.json
