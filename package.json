@@ -10,10 +10,13 @@
         "displayName": "Buddy Hackathon Android",
         "enableMultiJS": false,
         "messageKeys": {
-            "ACTIVE": 0,
-            "HEART": 2,
-            "REQUEST": 3,
-            "SLEEP": 1
+            "ACTIVE": 1,
+            "HEART": 5,
+            "REQUEST": 6,
+            "REST": 4,
+            "SLEEP": 3,
+            "STEP": 0,
+            "WALKED": 2
         },
         "projectType": "native",
         "resources": {

@@ -4,12 +4,14 @@ static Window *s_window;
 	
 // Keys for AppMessage Dictionary
 // These should correspond to the values you defined in appinfo.json/Settings
-enum {
-	ACTIVE_KEY = 0,	
-	SLEEP_KEY = 1,
-  HEART_KEY = 2,
-  REQUEST_KEY = 3
-};
+//enum {
+//	MESSAGE_KEY_STEP = 0,	
+//	MESSAGE_KEY_ACTIVE = 1,
+//  MESSAGE_KEY_WALKED = 2,
+//  MESSAGE_KEY_SLEEP = 3,
+//  MESSAGE_KEY_REST = 4,
+//  MESSAGE_KEY_HEART = 5
+//};
 
 static Layer *s_canvas_layer;
 
@@ -48,7 +50,7 @@ static void canvas_update_proc(Layer *layer, GContext *ctx) {
 static void in_received_handler(DictionaryIterator *received, void *context) {
 	Tuple *tuple;
 	
-	tuple = dict_find(received, REQUEST_KEY);
+	tuple = dict_find(received, MESSAGE_KEY_REQUEST);
 	if(tuple) {
 		APP_LOG(APP_LOG_LEVEL_DEBUG, "Received Request: %d", (int)tuple->value->uint32); 
 	}
@@ -95,10 +97,10 @@ static void send_awake_data(int steps, int active_secs, int walked_meters)
    AppMessageResult result = app_message_outbox_begin(&out_iter);
    if(result == APP_MSG_OK) 
    {
-      dict_write_int(out_iter, ACTIVE_KEY, &steps, sizeof(int), true);
-      dict_write_int(out_iter, ACTIVE_KEY, &active_secs, sizeof(int), true);
-      dict_write_int(out_iter, ACTIVE_KEY, &walked_meters, sizeof(int), true);
-
+      dict_write_int(out_iter, MESSAGE_KEY_STEP, &steps, sizeof(int), true);
+      dict_write_int(out_iter, MESSAGE_KEY_ACTIVE, &active_secs, sizeof(int), true);
+      dict_write_int(out_iter, MESSAGE_KEY_WALKED, &walked_meters, sizeof(int), true);
+      dict_write_end(out_iter);
       // Send this message
       result = app_message_outbox_send();
       if(result != APP_MSG_OK)
@@ -116,8 +118,9 @@ static void send_sleep_data(int sleep_secs, int restful_secs)
    AppMessageResult result = app_message_outbox_begin(&out_iter);
    if(result == APP_MSG_OK) 
    {
-      dict_write_int(out_iter, SLEEP_KEY, &sleep_secs, sizeof(int), true);
-      dict_write_int(out_iter, SLEEP_KEY, &restful_secs, sizeof(int), true);
+      dict_write_int(out_iter, MESSAGE_KEY_SLEEP, &sleep_secs, sizeof(int), true);
+      dict_write_int(out_iter, MESSAGE_KEY_REST, &restful_secs, sizeof(int), true);
+      dict_write_end(out_iter);
 
       // Send this message
       result = app_message_outbox_send();
@@ -136,8 +139,8 @@ static void send_heart_data(int heart)
    AppMessageResult result = app_message_outbox_begin(&out_iter);
    if(result == APP_MSG_OK) 
    {
-      dict_write_int(out_iter, HEART_KEY, &heart, sizeof(int), true);
-
+      dict_write_int(out_iter, MESSAGE_KEY_HEART, &heart, sizeof(int), true);
+      dict_write_end(out_iter);
       // Send this message
       result = app_message_outbox_send();
       if(result != APP_MSG_OK)
