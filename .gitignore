@@ -5,6 +5,8 @@
 instruments/*.json
 instruments/*.csv
 biomeasures/*_output.csv
+biomeasures/*.json
+algorithm/*.json
 
 # android development
 *.iml

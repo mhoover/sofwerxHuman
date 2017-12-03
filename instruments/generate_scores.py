@@ -81,7 +81,7 @@ def calculate_scores(values, scale=['tci', 'tipi']):
 def run(args_dict):
     results = {}
     for i in xrange(args_dict['nsize']):
-        rid = ''.join(random.choice(ascii_lowercase + digits) for i in xrange(8))
+        rid = 'a{}'.format(i)
         # identify the ranges to sample
         tipi_probs = calc_probs(args_dict['tipi_type'])
         tci_probs = calc_probs(args_dict['tci_type'])

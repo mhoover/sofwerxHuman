@@ -1,73 +1,84 @@
 #!/usr/bin/python
 import argparse
+import json
+import numpy as np
 import pandas as pd
-
-from datetime import datetime
-
-
-def etl_data_source(file):
-    # read in data
-    tmp = pd.read_csv(file, sep=None, engine='python')
-
-    # convert string timestamp to numeric
-    tmp.timestamp = tmp.timestamp.apply(
-        lambda x: datetime.strptime(x, '%m/%d/%y %H:%M')
-    )
-
-    # calculate day
-    tmp['day'] = tmp.timestamp.dt.date
-
-    # get index of (then subset) maximal values collected per person per day
-    idx = tmp.groupby(['id', 'day']).timestamp.transform(max) == tmp.timestamp
-    tmp = tmp[idx]
-
-    # calculate total time capture for day
-    tmp['total_time'] = (
-        tmp.timestamp.dt.hour * 60**2 +
-        tmp.timestamp.dt.second * 60 +
-        tmp.timestamp.dt.minute
-    )
-
-    return tmp
+import random
 
 
-def run():
-    # work on sleep data
-    sleep = etl_data_source(SLEEP)
+SLEEP = [
+    28800,
+    6480,
+]
 
-    # calculate percents of sleep types
-    sleep['rem'] = sleep.apply(
-        lambda x: x.restful_seconds / float(x.total_time), axis=1
-    )
-    sleep['non_rem'] = sleep.apply(lambda x:
-        (x.sleep_seconds - x.restful_seconds) / float(x.total_time), axis=1
-    )
-    sleep['awake'] = sleep.apply(lambda x: 1 - (x.rem + x.non_rem), axis=1)
+STEPS = [
+    10000,
+    7620,
+]
 
-    # calculate total values for 24-hour period
-    sleep[['rem', 'non_rem', 'awake']] = (
-        sleep[['rem', 'non_rem', 'awake']].apply(lambda x: x*24, axis=1)
-    )
 
-    # values for calculation
-    sleep = sleep[['id', 'day', 'rem', 'non_rem', 'awake']]
+def create_dict_values(x, time):
+    return {
+        key: value for key, value in zip(
+            ['2017-12-0{}'.format(i+1) if len(str(i))==1 else
+             '2017-12-{}'.format(i+1) for i in xrange(time)], x
+        )
+    }
 
-    # work on step measures
-    steps = etl_data_source(STEPS)
 
-    # calculate final values to output
-    steps.active_seconds = steps.apply(
-        lambda x: (x.active_seconds / float(x.total_time)) * 24, axis=1
-    )
-    steps = steps[['id', 'day', 'step_count', 'active_seconds', 'walked_meters']]
+def run(args_dict):
+    results = {}
+    for i in xrange(args_dict['nsize']):
+        rid = 'a{}'.format(i)
 
-    # output data
-    sleep.to_csv('biomeasures/sleep_output.csv', index=False)
-    steps.to_csv('biomeasures/steps_output.csv', index=False)
+        # sleep data
+        sleep = [np.random.normal(SLEEP[0], .125*SLEEP[0]) for i in
+                 xrange(args_dict['time'])]
+        rem = [np.random.normal(SLEEP[1], .25*SLEEP[1]) for i in
+               xrange(args_dict['time'])]
+        non_rem = [x-y for x, y in zip(sleep, rem)]
+        assert all([x>=0 for x in non_rem])
+        awake = [24*60**2 - x for x in sleep]
+
+        # steps
+        steps = [np.random.normal(STEPS[0], .35*STEPS[0]) for i in
+                 xrange(args_dict['time'])]
+        walkm = [np.random.normal(STEPS[1], .15*STEPS[1]) for i in
+                 xrange(args_dict['time'])]
+
+        # expand to dictionary
+        awake = create_dict_values(awake, args_dict['time'])
+        rem = create_dict_values(rem, args_dict['time'])
+        non_rem = create_dict_values(non_rem, args_dict['time'])
+        steps = create_dict_values(steps, args_dict['time'])
+        walked_meters = create_dict_values(walkm, args_dict['time'])
+
+        # update data
+        results.update(
+            {
+                rid: {
+                    'awake': awake,
+                    'rem': rem,
+                    'non_rem': non_rem,
+                    'steps': steps,
+                    'walked_meters': walked_meters,
+                }
+            }
+        )
+
+    # output results
+    with open('{}.json'.format(args_dict['output']), 'w') as f:
+        json.dump(results, f)
 
 
 if __name__ == '__main__':
-    SLEEP = 'biomeasures/sleep_measures.csv'
-    STEPS = 'biomeasures/steps_measures.csv'
+    parser = argparse.ArgumentParser(description='Mock biometric data.')
+    parser.add_argument('-n', '--nsize', required=True, type=int, help='The '
+                        'number of people to generate.')
+    parser.add_argument('-t', '--time', required=True, type=int, help='Number '
+                        'of days to generate.')
+    parser.add_argument('-o', '--output', required=True, help='Name of output '
+                        'file.')
+    args_dict = vars(parser.parse_args())
 
-    run()
+    run(args_dict)
